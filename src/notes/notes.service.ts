@@ -12,7 +12,7 @@ export class NotesService {
     return await this.notesRepository.find();
   }
 
-  findOne(id: string): Promise<Note> {
+  findOne(id): Promise<Note> {
     return this.notesRepository.findOne(id);
   }
 
@@ -24,7 +24,7 @@ export class NotesService {
     await this.notesRepository.delete(id);
   }
 
-  async editNote(id: number, note: Note): Promise<Note> {
+  async editNote(id, note: Note): Promise<Note> {
     const editedNote = await this.notesRepository.findOne(id);
     if (!editedNote) {
       throw new NotFoundException('Note is not found');

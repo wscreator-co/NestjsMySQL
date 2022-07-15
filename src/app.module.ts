@@ -7,7 +7,16 @@ import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot(),
+    TypeOrmModule.forRoot({
+      "type": "mysql",
+      "host": "localhost",
+      "port": 3306,
+      "username": "root",
+      "password": "",
+      "database": "nestjs_restapi",
+      "entities": ["dist/**/*.entity{.ts,.js}"],
+      "synchronize": true
+    }),
     NotesModule,
     UserModule
   ],
