@@ -6,18 +6,35 @@ import {
   Param,
   Patch,
   Post,
+  CacheInterceptor,
+  UseInterceptors,
+  CACHE_MANAGER,
+  Inject,
 } from '@nestjs/common';
 import { ParseIntPipe } from '@nestjs/common/pipes/parse-int.pipe';
 import { Note } from './note.entity';
 import { NotesService } from './notes.service';
+import {Cache} from 'cache-manager';
 
 @Controller('notes')
+@UseInterceptors(CacheInterceptor)
 export class NotesController {
-  constructor(private notesService: NotesService) {}
+  constructor(private notesService: NotesService, @Inject(CACHE_MANAGER) private cacheManager: Cache) {}
 
   @Get()
-  findAll() {
-    return this.notesService.getNotes();
+  async findAll() {    
+    let value = await this.cacheManager.get('note');
+    if(value){
+      return{
+        dataFrom: 'In-memory Cache',
+        note: value
+      }
+    }
+    await this.cacheManager.set('note', this.notesService.getNotes(), {ttl: 300} );
+    return {
+      dataFrom: 'Database',
+      note: this.notesService.getNotes()
+    }
   }
 
   @Get(':id')
